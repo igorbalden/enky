@@ -8,6 +8,7 @@
 <%- include('../partials/messages') %>
 <h5 class="text-center"><%= session.user.name %> dashboard</h5> 
 <form action="saveAdmins" method="post" id="saveAdminsForm" novalidate>
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
   <div class=" table-responsive">
     <table class=" table">
       <tr>

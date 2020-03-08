@@ -1,4 +1,7 @@
 const bcrypt = require('bcryptjs');
+const UserModel = require('../mysql/UserModel');
+const authConf = require('../../config/auth');
+const ckName = authConf.rememberCookieName;
 
 module.exports = class EnkySecurity {
   /**
@@ -33,6 +36,19 @@ module.exports = class EnkySecurity {
         })
       })
       .catch(err => reject('fin Err'));
+    });
+  };
+
+  /**
+   * Actions to log user out.
+   */
+  static logUserOut(req, res) {
+    return new Promise((resolve) => {
+      UserModel.deleteRemember(req.user.id);
+      res.clearCookie(ckName, '1', { httpOnly: true });
+      delete req.session.user;
+      req.logout();
+      resolve();
     });
   };
 

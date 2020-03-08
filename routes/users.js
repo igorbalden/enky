@@ -12,6 +12,8 @@ const {check, validationResult} = require('express-validator');
 const authConf = require('../config/auth');
 const rememberDays = authConf.rememberCookieDays * 24 * 60 * 60 * 1000;
 const ckName = authConf.rememberCookieName;
+const csrf = require('csurf');
+const csrfProtection = csrf();
 
 /**
  * Login Page
@@ -30,12 +32,15 @@ router.get('/register', forwardAuthenticated,
 /**
  * Dashboard Page
  */
-router.get('/dashboard', ensureAuthenticated, (req, res) => {
+router.get('/dashboard', ensureAuthenticated, csrfProtection, (req, res) => {
   UserModel.getAllAdmin(req, res)
   .then((result) => {
     if (req.session.user.is_admin) {
-      return res.render('users/dashboardAdm', 
-        {users: result, rCooky: req.cookies[ckName]});
+      return res.render('users/dashboardAdm', { 
+          csrfToken: req.csrfToken(), 
+          users: result, 
+          rCooky: req.cookies[ckName]
+      });
     }
     return res.render('users/dashboard', 
       {users: result, rCooky: req.cookies[ckName]});
@@ -154,10 +159,10 @@ router.post('/login', [
 /**
  * Save Administrators Post
  */
-router.post('/saveAdmins', (req, res) => {
+router.post('/saveAdmins', csrfProtection, (req, res) => {
   // Log the user out if they are not an admin.
   if (req.user.is_admin !== 1) {
-    logUserOut(req, res)
+    EnkySecurity.logUserOut(req, res)
     .then(() => {
       req.flash('error_msg', 'Access denied.');
       return res.redirect('/users/login');
@@ -189,23 +194,10 @@ router.post('/saveAdmins', (req, res) => {
 });
 
 /**
- * Actions to log user out.
- */
-const logUserOut = (req, res) => {
-  return new Promise((resolve) => {
-    UserModel.deleteRemember(req.user.id);
-    res.clearCookie(ckName, '1', { httpOnly: true });
-    delete req.session.user;
-    req.logout();
-    resolve();
-  });
-};
-
-/**
  * Logout 
  */
 router.get('/logout', (req, res) => {
-  logUserOut(req, res)
+  EnkySecurity.logUserOut(req, res)
   .then(() => {
     req.flash('success_msg', 'You are logged out');
     res.redirect('/users/login');
