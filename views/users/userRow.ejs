@@ -1,0 +1,13 @@
+
+<tr>
+  <td><%= i.id %></td>
+  <td><%= i.name %></td>
+  <td><%= i.email %></td>
+  <% if (session.user.is_admin) { %>
+    <td>
+      <input type="checkbox" name="is_admin_<%= i.id %>" 
+        id="is_admin_<%= i.id %>"
+        <% if (i.is_admin) { %>' checked '<% } %> />
+    </td>
+  <% } %>
+</tr>

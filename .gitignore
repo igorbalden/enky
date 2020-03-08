@@ -1,0 +1,6 @@
+// Environment
+.env*
+!.env.example
+
+// Node libs
+node_modules

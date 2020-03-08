@@ -1,0 +1,15 @@
+
+<% if (enkyDebug === 'true') { %>
+
+  <div class="m-5">
+    <p>
+      <strong>Session:</strong> <%= JSON.stringify(session) %>
+    </p>
+    <p>
+      <strong>Remember Cookie:</strong> <% if (typeof rCooky != 'undefined') { %>
+        <%= rCooky %>
+      <% } %>
+    </p>
+  </div>
+
+<% } %>

@@ -1,0 +1,39 @@
+<div class="row mt-5">
+  <div class="col-md-6 m-auto">
+    <div class="card card-body">
+      <h1 class="text-center mb-3">Login</h1>
+      <%- include('../partials/messages') %>
+      <form action="/users/login" method="POST" novalidate>
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" class="form-control" />
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password"
+            class="form-control" />
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Login</button>
+        <p class="mt-4">
+          <label for="remember">
+          <input type="checkbox" name="remember" id="remember"/>
+          Remember me</label>
+        </p>
+      </form>
+      <p class="">
+        <a href="/password/forgotPassword">Forgot password?</a>
+      </p>
+    </div>
+    <div>
+      <p class="lead mt-4">
+        No Account? <a href="/users/register">Register</a>
+      </p>
+    </div>
+  </div>
+</div>
+
+<script>
+window.onload = () => {
+  document.getElementById('email').focus();  
+}
+</script>

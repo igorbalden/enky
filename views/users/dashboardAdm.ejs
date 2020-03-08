@@ -1,0 +1,30 @@
+
+<style>
+  span {
+    margin: 1rem 2rem;
+  }
+</style>
+
+<%- include('../partials/messages') %>
+<h5 class="text-center"><%= session.user.name %> dashboard</h5> 
+<form action="saveAdmins" method="post" id="saveAdminsForm" novalidate>
+  <div class=" table-responsive">
+    <table class=" table">
+      <tr>
+        <th>ID</th><th>Name</th><th>Email</th>
+        <% if (session.user.is_admin) { %>
+          <th>Admin</th>
+        <% } %>
+      </tr>
+      <% if(typeof users != 'undefined') { %>
+        <% users.forEach(function(i) { %>
+          <%- include('userRow', {i}); %>
+        <% }); %>
+      <% } %>
+    </table>
+    <% if (session.user.is_admin) { %>
+      <button id="saveAdminsBtn">Submit</button>
+    <% } %>
+  </div>
+</form>
+
