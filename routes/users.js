@@ -12,6 +12,7 @@ const {check, validationResult} = require('express-validator');
 const authConf = require('../config/auth');
 const rememberDays = authConf.rememberCookieDays * 24 * 60 * 60 * 1000;
 const ckName = authConf.rememberCookieName;
+const AuthHelpers = require('../helpers/AuthHelpers');
 const csrf = require('csurf');
 const csrfProtection = csrf();
 
@@ -162,7 +163,7 @@ router.post('/login', [
 router.post('/saveAdmins', csrfProtection, (req, res) => {
   // Log the user out if they are not an admin.
   if (req.user.is_admin !== 1) {
-    EnkySecurity.logUserOut(req, res)
+    AuthHelpers.logUserOut(req, res)
     .then(() => {
       req.flash('error_msg', 'Access denied.');
       return res.redirect('/users/login');
@@ -197,7 +198,7 @@ router.post('/saveAdmins', csrfProtection, (req, res) => {
  * Logout 
  */
 router.get('/logout', (req, res) => {
-  EnkySecurity.logUserOut(req, res)
+  AuthHelpers.logUserOut(req, res)
   .then(() => {
     req.flash('success_msg', 'You are logged out');
     res.redirect('/users/login');

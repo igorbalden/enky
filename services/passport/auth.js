@@ -66,7 +66,8 @@ module.exports = {
           res.cookie(ckName, req.cookies[ckName], ckOptions);
           // Log the user in
           req.session.passport = {user: user.id};
-          req.session.user = {name: user.name, email: user.email};
+          req.session.user = {name: user.name, 
+            email: user.email, is_admin: user.is_admin};
           res.redirect(req.session.goingTo || 'dashboard');
         } else {
           return next();
