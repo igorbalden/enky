@@ -74,7 +74,7 @@ module.exports = {
         }
       })
       .catch(() => {
-        console.log('remember me cookie check false')
+        console.log("No 'remember me' cookie.")
         return next();
       });
     }

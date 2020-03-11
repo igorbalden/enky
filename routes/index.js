@@ -11,7 +11,7 @@ router.get('/', (req, res) => res.render('welcome',
   {rCooky: req.cookies[authConf.rememberCookieName]})
 );
 
-router.get('/about', ensureAuthenticated, (req, res) => res.render('about',
+router.get('/more', ensureAuthenticated, (req, res) => res.render('more',
   {rCooky: req.cookies[authConf.rememberCookieName]})
 );
 
