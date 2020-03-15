@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Mar 08, 2020 at 07:37 PM
+-- Generation Time: Mar 15, 2020 at 05:01 PM
 -- Server version: 5.7.25-log
 -- PHP Version: 7.3.2
 
@@ -69,6 +69,7 @@ CREATE TABLE `users` (
   `id` int(11) NOT NULL,
   `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `is_active` tinyint(3) UNSIGNED NOT NULL,
   `is_admin` tinyint(3) UNSIGNED NOT NULL,
   `uuid` varchar(36) COLLATE utf8mb4_unicode_ci NOT NULL,
   `remember_me` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,

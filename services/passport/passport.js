@@ -6,7 +6,7 @@ module.exports = function(passport) {
   passport.use(
     new LocalStrategy({usernameField: 'email'}, (email, password, done) => {
       // Match user
-      UserModel.findOnePassw(email, 'email')
+      UserModel.findOneActivePassw(email, 'email')
       .then((user) => {
         if (!user) {
           return done(null, false, { message: 'Email/Password incorrect' });

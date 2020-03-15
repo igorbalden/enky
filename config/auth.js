@@ -1,4 +1,3 @@
-
 const authConf = {
   // How long the password reset link will be valid. Hours.
   passwordResetHours: 1,

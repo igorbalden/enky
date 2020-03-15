@@ -158,39 +158,34 @@ router.post('/login', [
 );
 
 /**
- * Save Administrators Post
+ * Toggle Admin status
  */
-router.post('/saveAdmins', csrfProtection, (req, res) => {
-  // Log the user out if they are not an admin.
-  if (req.user.is_admin !== 1) {
-    AuthHelpers.logUserOut(req, res)
-    .then(() => {
-      req.flash('error_msg', 'Access denied.');
-      return res.redirect('/users/login');
-    });
-    return false;
-  }
-  const adminsArr = [];
-  // checkboxe names are like is_admin_xx
-  for (let i of Object.keys(req.body)) {
-    if (i.slice(0, 8) === 'is_admin') {
-      adminsArr.push(i.split('_')[2]);
-    }
-  }
-  let admins = adminsArr.join(',');
-  UserModel.updateAdmins(admins)
+router.post('/toggleAdmin', csrfProtection, (req, res) => {
+  const {uid, state} = req.body;
+  UserModel.toggleAdmin(uid, state)
   .then((result) => {
     if (result) {
-      req.flash('success_msg', 'Admins updated.');
-      return res.redirect('/users/dashboard');
-    } else {
-      req.flash('error_msg', 'Database error-1.');
-      return res.redirect('/users/dashboard');
+      return res.json({msg: "Admin updated", uid: uid, state: state});
     }
   })
   .catch((err) => {
-    console.log(err)
-    return res.render('users/dashboard', {error_msg: "Database error"});
+    return res.status(500).json({error: "Database error."});
+  });
+});
+
+/**
+ * Toggle Active status
+ */
+router.post('/toggleActive', csrfProtection, (req, res) => {
+  const {uid, state} = req.body;
+  UserModel.toggleActive(uid, state)
+  .then((result) => {
+    if (result) {
+      return res.json({msg: "Active status updated", uid: uid, state: state});
+    }
+  })
+  .catch((err) => {
+    return res.status(500).json({error: "Database error."});
   });
 });
 

@@ -6,8 +6,13 @@
   <% if (session.user.is_admin) { %>
     <td>
       <input type="checkbox" name="is_admin_<%= i.id %>" 
-        id="is_admin_<%= i.id %>"
-        <% if (i.is_admin) { %>' checked '<% } %> />
+        id="is_admin_<%= i.id %>" onclick="toggleAdmin('<%= i.id %>')"
+        <% if (i.is_admin) { %>" checked "<% } %> />
+    </td>
+    <td>
+      <input type="checkbox" name="is_active_<%= i.id %>" 
+        id="is_active_<%= i.id %>" onclick="toggleActive('<%= i.id %>')"
+        <% if (i.is_active) { %>" checked "<% } %> />
     </td>
   <% } %>
 </tr>

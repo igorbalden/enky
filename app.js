@@ -21,6 +21,7 @@ if (process.env.ENKY_ENV === 'local') {
   app.use(express.static('public'));
 }
 // Express body parser
+app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 // Connect flash

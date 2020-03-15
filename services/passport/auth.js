@@ -13,21 +13,26 @@ const cookieCheck = (req, res) => {
     if (typeof req.cookies == 'undefined' ||
         typeof req.cookies[ckName] == 'undefined')
     {  
-      resolve(null);
+      return resolve(null);
     }
     const uuid = req.cookies[ckName].slice(0,36);
     const token = req.cookies[ckName].slice(36);
-    UserModel.findByUuid(uuid)
+    UserModel.findActiveByUuid(uuid)
     .then((user) => {
-      bcrypt.compare(token, user.remember_me)
-      .then(
-        (result) => {
-          if (result === true) {
-            resolve(user);
-          }
-          res.clearCookie(ckName, '1', { httpOnly: true });
-          resolve(null);
-      });
+      if (user) {
+        bcrypt.compare(token, user.remember_me)
+        .then(
+          (result) => {
+            if (result === true) {
+              resolve(user);
+            }
+            res.clearCookie(ckName, '1', { httpOnly: true });
+            resolve(null);
+        });
+      } else {
+        // Admin has turn user inactive
+        return reject("No user");
+      }
     });
   });
 };

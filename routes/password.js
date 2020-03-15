@@ -20,7 +20,7 @@ router.post('/forgotPassword', (req, res) => {
       { error: 'Please enter your email.', email});
   }
   // Check user
-  UserModel.findByEmail(email)
+  UserModel.findActiveByEmail(email)
   .catch(() => {
     res.render('password/forgotPassword', 
       {error: "Database error", email});
