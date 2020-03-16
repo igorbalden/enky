@@ -10,6 +10,8 @@
 <form action="saveAdmins" method="post" id="saveAdminsForm" 
   novalidate onsubmit="return false;">
   <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+  <input type="hidden" name="self-user" id="self-user"
+    value="<%= session.passport.user %>" />
   <div class=" table-responsive">
     <table class=" table">
       <tr>
@@ -46,6 +48,18 @@ const getToken = () => {
  */
 const toggleAdmin = (uid) => {
   $("input").prop('disabled', true);
+  let selfUser = $("input#self-user").val();
+  if (uid == selfUser && !$("#is_admin_"+uid).prop('checked')) {
+    if (!confirm(
+        "         This will log you out. \n \
+        You won't be an admin. \n \
+        Proceed?")) 
+    {
+      $("input").prop('disabled', false);
+      $("#is_admin_"+uid).prop('checked', true);
+      return false;
+    }
+  }
   let token = getToken();
   let state = $("#is_admin_"+uid).prop('checked') ? 'on' : 'off';
   fetch('toggleAdmin', {
@@ -65,11 +79,18 @@ const toggleAdmin = (uid) => {
     // success
     if (data.msg === 'Admin updated') {
       showPopover('admin', data);
-    } else {
-      // error
-      alert("Database error");
-      location.reload();
+      return false;
     }
+    // logout
+    if (data.msg === 'Logout') {
+      showPopover('admin', data);
+      location.reload();
+      return false;
+    }
+    // error
+    alert("Database error");
+    location.reload();
+    return false;
   });
 };
 
@@ -78,6 +99,18 @@ const toggleAdmin = (uid) => {
  */ 
 const toggleActive = (uid) => {
   $("input").prop('disabled', true);
+  let selfUser = $("input#self-user").val();
+  if (uid == selfUser && !$("#is_active_"+uid).prop('checked')) {
+    if (!confirm(
+        "         This will log you out. \n \
+        You won't be able to log back in, again. \n \
+        Proceed?")) 
+    {
+      $("input").prop('disabled', false);
+      $("#is_active_"+uid).prop('checked', true);
+      return false;
+    }
+  }
   let token = getToken();
   let state = $("#is_active_"+uid).prop('checked') ? 'on' : 'off';
   fetch('toggleActive', {
@@ -97,11 +130,18 @@ const toggleActive = (uid) => {
     // success
     if (data.msg === 'Active status updated') {
       showPopover('active', data);
-    } else {
-      // error
-      alert("Database error");
-      location.reload();
+      return false;
     }
+    // logout
+    if (data.msg === 'Logout') {
+      showPopover('active', data);
+      location.reload();
+      return false;
+    }
+    // error
+    alert("Database error");
+    location.reload();
+    return false;
   });
 };
 

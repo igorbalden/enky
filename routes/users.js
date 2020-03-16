@@ -163,12 +163,20 @@ router.post('/login', [
 router.post('/toggleAdmin', csrfProtection, (req, res) => {
   const {uid, state} = req.body;
   UserModel.toggleAdmin(uid, state)
-  .then((result) => {
-    if (result) {
-      return res.json({msg: "Admin updated", uid: uid, state: state});
+  .then((admResult) => {
+    if (admResult) {
+      if (uid == req.session.passport.user) {
+        AuthHelpers.logUserOut(req, res)
+        .then(() => {
+          return res.json({msg: "Logout", uid: uid, state: state});
+        });
+      } else {
+        return res.json({msg: "Admin updated", uid: uid, state: state});
+      }
     }
   })
   .catch((err) => {
+    console.log(err)
     return res.status(500).json({error: "Database error."});
   });
 });
@@ -181,7 +189,14 @@ router.post('/toggleActive', csrfProtection, (req, res) => {
   UserModel.toggleActive(uid, state)
   .then((result) => {
     if (result) {
-      return res.json({msg: "Active status updated", uid: uid, state: state});
+      if (uid == req.session.passport.user) {
+        AuthHelpers.logUserOut(req, res)
+        .then(() => {
+          return res.json({msg: "Logout", uid: uid, state: state});
+        });
+      } else {
+        return res.json({msg: "Active status updated", uid: uid, state: state});
+      }
     }
   })
   .catch((err) => {
