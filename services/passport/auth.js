@@ -43,10 +43,12 @@ module.exports = {
    */
   ensureAuthenticated: function(req, res, next) {
     if (req.isAuthenticated()) {
-      delete req.session.goingTo;
+      res.clearCookie('goingTo', '1');
       return next();
     }
-    req.session.goingTo = req.originalUrl;
+    var goingTo = (req.originalUrl !== '/users/login') 
+      ? req.originalUrl : req.cookies['goingTo'];
+    res.cookie('goingTo', goingTo);
     req.flash('error_msg', 'Please log in to access this resource');
     res.redirect('/users/login');
   },
@@ -58,7 +60,7 @@ module.exports = {
    */
   forwardAuthenticated: function(req, res, next) {
     if (req.isAuthenticated()) {
-      res.redirect(req.session.goingTo || 'dashboard');
+      res.redirect(req.cookies['goingTo'] || 'dashboard');
     } else {
       cookieCheck(req, res)
       .then((user) => {
@@ -73,7 +75,7 @@ module.exports = {
           req.session.passport = {user: user.id};
           req.session.user = {name: user.name, 
             email: user.email, is_admin: user.is_admin};
-          res.redirect(req.session.goingTo || 'dashboard');
+          res.redirect(req.cookies['goingTo'] || 'dashboard');
         } else {
           return next();
         }
