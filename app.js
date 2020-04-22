@@ -8,7 +8,7 @@ const passport = require('passport');
 const flash = require('connect-flash');
 const app = express();
 
-app.use(cookieParser());
+app.use(cookieParser(process.env.ENKY_SECRET_KEY));
 app.set('trust proxy', 1); // trust proxie required for https
 app.use(session(sessionConfig));
 

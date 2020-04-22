@@ -144,7 +144,7 @@ router.post('/login', [
           res.cookie(ckName, user.uuid+remember_token, ckOptions);
           req.session.user = {name: req.user.name, 
             email: req.user.email, is_admin: req.user.is_admin}; 
-          res.redirect(req.session.goingTo || 'dashboard');
+          res.redirect(req.cookies['goingTo'] || 'dashboard');
         });
       });
     } else {
@@ -152,7 +152,7 @@ router.post('/login', [
       res.clearCookie(ckName, '1', { httpOnly: true });
       req.session.user = {name: req.user.name, 
         email: req.user.email, is_admin: req.user.is_admin}; 
-      res.redirect(req.session.goingTo || 'dashboard');
+      res.redirect(req.cookies['goingTo'] || 'dashboard');
     }
   }
 );
