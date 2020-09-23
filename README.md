@@ -1,7 +1,9 @@
 # ENKY
 
 Boilerplate for Express applications with user authentication.  
-Uses MySql, express-session, and passport.
+Uses MySql, express-session, and passport.  
+Presented at <a href="https://hackernoon.com/express-js-boilerplate-with-user-authentication-ch5032a3" target="_blank">
+**Hackernoon**</a>
 
 ## Features
 1.  Password forgot, reset  
@@ -33,9 +35,9 @@ The administrator can make other admins, and activate, deactivate users.
 
 ## Configuration  
 ### Email
-Uses [Nodemailer](https://github.com/nodemailer/nodemailer).  
+Uses <a href="https://github.com/nodemailer/nodemailer" target="_blank">**Nodemailer**</a>.  
 In **/config/mail.js** there are two configured example mailers.  
-1.  The 'local' one will work with [Mailhog](https://github.com/mailhog/MailHog) SMTP testing server.
+1.  The 'local' one will work with <a href="https://github.com/mailhog/MailHog" target="_blank">**Mailhog**</a> SMTP testing server.
 2.  The 'production' mailer uses a common linux server configuration.  
 
 There configurations can be modified, and other configurations can be added as needed.
