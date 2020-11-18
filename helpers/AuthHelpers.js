@@ -9,12 +9,11 @@ module.exports = class AuthHelpers {
    */
   static logUserOut(req, res) {
     return new Promise((resolve) => {
-      if (req.session.passport) {
-        UserModel.deleteRemember(req.session.passport.user);
+      if (req.session.user && req.session.user.id) {
+        UserModel.deleteRemember(req.session.user.id);
       }
       res.clearCookie(ckName, '1', { httpOnly: true });
       delete req.session.user;
-      req.logout();
       resolve();
     });
   };

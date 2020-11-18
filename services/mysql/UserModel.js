@@ -162,7 +162,7 @@ class UserModel {
   static deleteSession(uid) {
     return new Promise((resolve, reject) => {
       let sql = `DELETE FROM sessions 
-        WHERE data LIKE '%,\"passport\":{\"user\":${uid}},%'`;
+        WHERE data LIKE '%,"user":{"id":${uid},%'`;
       pool.query(sql, [uid],
       (err, result) => {
         if (err) reject(err);
@@ -213,7 +213,7 @@ class UserModel {
         LEFT JOIN users u2 ON (u1.id = ?)
         WHERE (u2.id = ?) OR (u1.is_admin = 1 AND u2.id IS NOT NULL)
         ORDER BY u1.id`; 
-      pool.query(sql, [req.user.id, req.user.id],
+      pool.query(sql, [req.session.user.id, req.session.user.id],
       (err, result) => {
         if (err) reject("Database error");
         else {resolve(result);}
@@ -226,7 +226,7 @@ class UserModel {
    */
   static deleteRemember(usIn) {
     return new Promise((resolve, reject) => {
-      let sql = `UPDATE users SET remember_me = NULL  WHERE id = ? LIMIT 1`;
+      let sql = `UPDATE users SET remember_me = NULL WHERE id = ? LIMIT 1`;
       pool.query(sql, [usIn],
       (err, result) => {
         if (err) reject(err);

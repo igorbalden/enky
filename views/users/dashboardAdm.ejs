@@ -11,7 +11,7 @@
   novalidate onsubmit="return false;">
   <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
   <input type="hidden" name="self-user" id="self-user"
-    value="<%= session.passport.user %>" />
+    value="<%= session.user.id %>" />
   <div class=" table-responsive">
     <table class=" table">
       <tr>

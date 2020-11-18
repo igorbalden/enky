@@ -1,7 +1,7 @@
 # ENKY
 
 Boilerplate for Express applications with user authentication.  
-Uses MySql, express-session, and passport.  
+Uses MySql, express-session.  
 Presented at <a href="https://hackernoon.com/express-js-boilerplate-with-user-authentication-ch5032a3" target="_blank">
 **Hackernoon**</a>
 

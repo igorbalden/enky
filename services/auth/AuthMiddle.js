@@ -39,10 +39,39 @@ const cookieCheck = (req, res) => {
 
 module.exports = {
   /**
+   * Check user submitted credentials
+   */
+  authenticateUser: function(req, res, next) {
+    // Match user
+    UserModel.findOneActivePassw(req.body.email, 'email')
+    .then((user) => {
+      if (!user) {
+        return res.status(401).json({error_msg: 'Email/Password incorrect'});
+      }
+      // Match password
+      bcrypt.compare(req.body.password, user.password, (err, isMatch) => {
+        if (err) {
+          return res.status(500).json({error_msg: 'DB error'});
+        }
+        if (isMatch) {
+          req.user = user;
+          return next();
+        } else {
+          return res.status(401)
+            .json({error_msg: 'Email/Password incorrect'});
+        }
+      });
+    })
+    .catch(err => {
+      return res.status(500).json({error_msg: 'DB error'});
+    });
+  },
+
+  /**
    * Check if the user is logged-in
    */
   ensureAuthenticated: function(req, res, next) {
-    if (req.isAuthenticated()) {
+    if (req.session.user && req.session.user.id) {
       res.clearCookie('goingTo', '1');
       return next();
     }
@@ -59,7 +88,7 @@ module.exports = {
    * forward him to destination
    */
   forwardAuthenticated: function(req, res, next) {
-    if (req.isAuthenticated()) {
+    if (req.session.user && req.session.user.id) {
       res.redirect(req.cookies['goingTo'] || 'dashboard');
     } else {
       cookieCheck(req, res)
@@ -72,8 +101,7 @@ module.exports = {
           };
           res.cookie(ckName, req.cookies[ckName], ckOptions);
           // Log the user in
-          req.session.passport = {user: user.id};
-          req.session.user = {name: user.name, 
+          req.session.user = {id: user.id, name: user.name, 
             email: user.email, is_admin: user.is_admin};
           res.redirect(req.cookies['goingTo'] || 'dashboard');
         } else {

@@ -1,10 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
-const passport = require('passport');
 const UserModel = require('../services/mysql/UserModel');
-const {ensureAuthenticated, forwardAuthenticated} = 
-  require('../services/passport/auth');
+const {
+  authenticateUser,
+  ensureAuthenticated, 
+  forwardAuthenticated
+} = require('../services/auth/AuthMiddle');
 const uuidv4 = require('uuid/v4');
 const EnkySecurity = require('../services/security/EnkySecurity');
 const {authLimiterMiddle} = require('../services/rateLimiter/rateLimiter');
@@ -20,7 +22,7 @@ const csrfProtection = csrf();
  * Login Page
  */
 router.get('/login', forwardAuthenticated, 
-  (req, res) => res.render('users/login')
+  (req, res) => res.render('users/login', {loginField: authConf.loginField})
 );
 
 /**
@@ -110,10 +112,7 @@ router.post('/register', [
  */ 
 router.post('/login', [
     authLimiterMiddle, 
-    passport.authenticate('local', {
-      failureRedirect: '/users/login', 
-      failureFlash: true
-    })
+    authenticateUser,
   ],
   (req, res) => {
     // authentication has succeeded
@@ -142,7 +141,7 @@ router.post('/login', [
             httpOnly: true 
           };
           res.cookie(ckName, user.uuid+remember_token, ckOptions);
-          req.session.user = {name: req.user.name, 
+          req.session.user = {id: req.user.id, name: req.user.name, 
             email: req.user.email, is_admin: req.user.is_admin}; 
           res.redirect(req.cookies['goingTo'] || 'dashboard');
         });
@@ -150,7 +149,7 @@ router.post('/login', [
     } else {
       UserModel.deleteRemember(req.user.id);
       res.clearCookie(ckName, '1', { httpOnly: true });
-      req.session.user = {name: req.user.name, 
+      req.session.user = {id: req.user.id, name: req.user.name, 
         email: req.user.email, is_admin: req.user.is_admin}; 
       res.redirect(req.cookies['goingTo'] || 'dashboard');
     }
@@ -165,7 +164,7 @@ router.post('/toggleAdmin', csrfProtection, (req, res) => {
   UserModel.toggleAdmin(uid, state)
   .then((admResult) => {
     if (admResult) {
-      if (uid == req.session.passport.user) {
+      if (uid == req.session.user.id) {
         AuthHelpers.logUserOut(req, res)
         .then(() => {
           return res.json({msg: "Logout", uid: uid, state: state});
@@ -189,7 +188,7 @@ router.post('/toggleActive', csrfProtection, (req, res) => {
   UserModel.toggleActive(uid, state)
   .then((result) => {
     if (result) {
-      if (uid == req.session.passport.user) {
+      if (uid == req.session.user.id) {
         AuthHelpers.logUserOut(req, res)
         .then(() => {
           return res.json({msg: "Logout", uid: uid, state: state});

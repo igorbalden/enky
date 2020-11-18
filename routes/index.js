@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const authConf = require('../config/auth');
-const {ensureAuthenticated} = require('../services/passport/auth');
+const {ensureAuthenticated} = require('../services/auth/AuthMiddle');
 const AuthHelpers = require('../helpers/AuthHelpers');
 
 /**
