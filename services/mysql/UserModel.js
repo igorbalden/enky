@@ -255,12 +255,9 @@ class UserModel {
    */
   static checkFieldName(fieldName) {
     return new Promise((resolve, reject)=> {
-      setTimeout(()=>{
-        console.log('timeout delete me')
-        let patt = /[^$\w]+/;
-        if (patt.test(fieldName)) reject(new Error("DB field uknown."));
-        resolve();
-      }, 1000);
+      let patt = /[^$\w]+/;
+      if (patt.test(fieldName)) reject(new Error("DB field uknown."));
+      resolve();
     });
   }
   
