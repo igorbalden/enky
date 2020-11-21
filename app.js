@@ -4,7 +4,6 @@ const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const sessionConfig = require('./config/session');
 const ejsLayouts = require('express-ejs-layouts');
-const passport = require('passport');
 const flash = require('connect-flash');
 const app = express();
 
@@ -36,11 +35,6 @@ app.use(function(req, res, next) {
   // res.locals.debug = true;
   next();
 });
-
-// Passport middleware
-require('./services/passport/passport')(passport);
-app.use(passport.initialize());
-app.use(passport.session());
 
 // Routes
 app.use('/', require('./routes/index.js'));

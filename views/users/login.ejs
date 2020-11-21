@@ -5,8 +5,11 @@
       <%- include('../partials/messages') %>
       <form action="/users/login" method="POST" novalidate>
         <div class="form-group">
-          <label for="email">Email</label>
-          <input type="email" id="email" name="email" class="form-control" />
+          <label for="<%= loginField %>">
+            <%= loginField.charAt(0).toUpperCase()+ loginField.slice(1) %>
+          </label>
+          <input type="text" id="<%= loginField %>" name="<%= loginField %>" 
+            class="form-control" />
         </div>
         <div class="form-group">
           <label for="password">Password</label>
@@ -34,6 +37,6 @@
 
 <script>
 window.onload = () => {
-  document.getElementById('email').focus();  
+  document.getElementById('<%= loginField %>').focus();  
 }
 </script>

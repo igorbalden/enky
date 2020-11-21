@@ -1,9 +1,11 @@
 const UserModel = require('../mysql/UserModel');
 const bcrypt = require('bcryptjs');
 
-const authConf = require('../../config/auth');
-const rememberDays = authConf.rememberCookieDays * 24 * 60 * 60 * 1000;
-const ckName = authConf.rememberCookieName;
+const {
+  rememberDays, 
+  ckName, 
+  loginField
+} = require('../../config/auth');
 
 /**
  * Check if 'remember me' cookie is valid
@@ -39,10 +41,53 @@ const cookieCheck = (req, res) => {
 
 module.exports = {
   /**
+   * Check user submitted credentials
+   */
+  authenticateUser: function(req, res, next) {
+    // Match user
+    UserModel.findOneActivePassw(req.body[loginField], loginField)
+    .then((user) => {
+      if (!user) {
+        res.status(401).render('users/login', {
+          loginField: loginField, 
+          error_msg: 'Incorrect credentials.'
+        });
+        return false;
+      }
+      // Match password
+      bcrypt.compare(req.body.password, user.password, (err, isMatch) => {
+        if (err) {
+          res.status(500).render('users/login', {
+            loginField: loginField, 
+            error_msg: 'Authentication error.'
+          });
+          return false;
+        }
+        if (isMatch) {
+          req.user = user;
+          return next();
+        } else {
+          res.status(401).render('users/login', {
+            loginField: loginField, 
+            error_msg: 'Incorrect credentials.'
+          });
+          return false;
+        }
+      });
+    })
+    .catch(err => {
+      res.render('users/login', {
+        loginField: loginField, 
+        error_msg: 'DB error'
+      });
+    });
+  },
+
+  /**
    * Check if the user is logged-in
    */
   ensureAuthenticated: function(req, res, next) {
-    if (req.isAuthenticated()) {
+    if (req.session.user && req.session.user.id) {
       res.clearCookie('goingTo', '1');
       return next();
     }
@@ -59,7 +104,7 @@ module.exports = {
    * forward him to destination
    */
   forwardAuthenticated: function(req, res, next) {
-    if (req.isAuthenticated()) {
+    if (req.session.user && req.session.user.id) {
       res.redirect(req.cookies['goingTo'] || 'dashboard');
     } else {
       cookieCheck(req, res)
@@ -72,8 +117,7 @@ module.exports = {
           };
           res.cookie(ckName, req.cookies[ckName], ckOptions);
           // Log the user in
-          req.session.passport = {user: user.id};
-          req.session.user = {name: user.name, 
+          req.session.user = {id: user.id, name: user.name, 
             email: user.email, is_admin: user.is_admin};
           res.redirect(req.cookies['goingTo'] || 'dashboard');
         } else {

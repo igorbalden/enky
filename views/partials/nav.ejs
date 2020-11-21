@@ -16,9 +16,7 @@
         <a class="nav-link" href="/users/dashboard">Dashboard</a>
       </li>
     </ul>
-    <% if ( typeof session.passport != 'undefined' && 
-            session.passport.user) 
-    { %>
+    <% if (session.user && session.user.id) { %>
       <a class="nav-link btn btn-secondary" href="/users/logout">
       Logout</a>
     <% } %>
