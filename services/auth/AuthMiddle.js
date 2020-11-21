@@ -1,9 +1,11 @@
 const UserModel = require('../mysql/UserModel');
 const bcrypt = require('bcryptjs');
 
-const authConf = require('../../config/auth');
-const rememberDays = authConf.rememberCookieDays * 24 * 60 * 60 * 1000;
-const ckName = authConf.rememberCookieName;
+const {
+  rememberDays, 
+  ckName, 
+  loginField
+} = require('../../config/auth');
 
 /**
  * Check if 'remember me' cookie is valid
@@ -43,27 +45,41 @@ module.exports = {
    */
   authenticateUser: function(req, res, next) {
     // Match user
-    UserModel.findOneActivePassw(req.body.email, 'email')
+    UserModel.findOneActivePassw(req.body[loginField], loginField)
     .then((user) => {
       if (!user) {
-        return res.status(401).json({error_msg: 'Email/Password incorrect'});
+        res.status(401).render('users/login', {
+          loginField: loginField, 
+          error_msg: 'Incorrect credentials.'
+        });
+        return false;
       }
       // Match password
       bcrypt.compare(req.body.password, user.password, (err, isMatch) => {
         if (err) {
-          return res.status(500).json({error_msg: 'DB error'});
+          res.status(500).render('users/login', {
+            loginField: loginField, 
+            error_msg: 'Authentication error.'
+          });
+          return false;
         }
         if (isMatch) {
           req.user = user;
           return next();
         } else {
-          return res.status(401)
-            .json({error_msg: 'Email/Password incorrect'});
+          res.status(401).render('users/login', {
+            loginField: loginField, 
+            error_msg: 'Incorrect credentials.'
+          });
+          return false;
         }
       });
     })
     .catch(err => {
-      return res.status(500).json({error_msg: 'DB error'});
+      res.render('users/login', {
+        loginField: loginField, 
+        error_msg: 'DB error'
+      });
     });
   },
 

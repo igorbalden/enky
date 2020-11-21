@@ -26,7 +26,11 @@ class UserModel {
   /**
    * Find one user, return all fields, exclude password, remember_me
    */
-  static findOne(val, field) {
+  static async findOne(val, field) {
+    await this.checkFieldName(field)
+    .catch((err)=> {
+      return reject(err);
+    });
     let sql = `SELECT id, name, email, is_admin, uuid FROM users 
               WHERE ${field} = ? LIMIT 1`;
     return new Promise((resolve, reject) => {
@@ -53,7 +57,11 @@ class UserModel {
   /**
    * Find one active user, return all fields, exclude password, remember_me
    */
-  static findOneActive(val, field) {
+  static async findOneActive(val, field) {
+    await this.checkFieldName(field)
+    .catch((err)=> {
+      return reject(err);
+    });
     let sql = `SELECT id, name, email, is_admin, uuid FROM users 
               WHERE ${field} = ? AND is_active = 1 LIMIT 1`;
     return new Promise((resolve, reject) => {
@@ -73,7 +81,11 @@ class UserModel {
   /**
    * Find one active user, return all fields, include password
    */
-  static findOneActivePassw(val, field) {
+  static async findOneActivePassw(val, field) {
+    await this.checkFieldName(field)
+    .catch((err)=> {
+      return reject(err);
+    });
     let sql = `SELECT * FROM users 
       WHERE ${field} = ? AND is_active = 1 LIMIT 1`;
     return new Promise((resolve, reject) => {
@@ -232,6 +244,23 @@ class UserModel {
         if (err) reject(err);
         else resolve(result);
       });
+    });
+  }
+
+  /**
+   * Check if the string is a valid DB column name.
+   * Only letters, digits, and the 2 characters _$ are allowed.
+   * Prevents Sql injection.
+   * @param {string} fieldName 
+   */
+  static checkFieldName(fieldName) {
+    return new Promise((resolve, reject)=> {
+      setTimeout(()=>{
+        console.log('timeout delete me')
+        let patt = /[^$\w]+/;
+        if (patt.test(fieldName)) reject(new Error("DB field uknown."));
+        resolve();
+      }, 1000);
     });
   }
   

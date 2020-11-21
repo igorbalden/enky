@@ -1,7 +1,7 @@
 # ENKY
 
 Boilerplate for Express applications with user authentication.  
-Uses MySql, express-session.  
+Uses MySql and express-session.  
 Presented at <a href="https://hackernoon.com/express-js-boilerplate-with-user-authentication-ch5032a3" target="_blank">
 **Hackernoon**</a>
 
@@ -10,7 +10,8 @@ Presented at <a href="https://hackernoon.com/express-js-boilerplate-with-user-au
 2.  Remember me cookie
 3.  Throttling
 4.  Administrator level set, reset  
-5.  Activate, deactivate user
+5.  Activate, deactivate user  
+6.  Authenticate user with any field, not only email. New in v1.1.0.
 
 ### MySql
 Create a new database and import **enky.sql** in it.
@@ -49,3 +50,24 @@ In **/config/auth.js**
 In **/config/session.js**  
 Default configuration:  
 Session store in MySql, duration 30mins, auto-renewal.  
+
+## Additions in v1.1.0  
+1.  Any column from DB Table 'users' can be used for authentication.  
+Added a configuration option in **/config/auth.js**.  
+As it is the table 'users' in the enky.sql file, the developer may  
+select between 'name', or 'email' fields. Email is the default.  
+If the 'name' field is configured to identify the login user,  
+the developer must add a uniqueness check in the new user registration form.   
+Similar action needs to be taken, if the developer adds a new field  
+in the users table, to be used as login identity. In this case the new  
+DB column name must contain only letters, digits, and the 2 characters _$.  
+The password forgot - reset functionality is still based on the email.  
+  
+2.  The validation function based on the 'express-validator' middleware  
+has been moved in a detached function. So it is more clear how the  
+uniqueness check can be added.  
+The developer may also gather all validations in a separate file.  
+  
+3.  The 'passport' middleware is not used anymore.  
+  
+
